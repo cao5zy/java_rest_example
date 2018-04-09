@@ -1,0 +1,27 @@
+---
+- name: deploy test war to jetty
+  hosts: localhost
+  become: true
+  become_method: sudo
+  
+  tasks:
+  - name: init jetty deploy folder
+    file:
+      path: ./jetty
+      state: directory
+      
+  - name: copy file
+    copy:
+      src: ./../build/libs/java_rest_example.war
+      dest: ./jetty
+
+  - name: start container
+    docker_container:
+      name: jetty_rest
+      image: jetty:9.4.9
+      ports:
+      - 8087:8080
+      volumes:
+      - "./jetty://var/lib/jetty/webapps:Z"
+      state: started
+...
